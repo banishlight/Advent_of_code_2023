@@ -1,6 +1,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -44,6 +45,33 @@ bool isSymbol(char input) {
     return (!isNum(input) && !(input == '.'));
 }
 
+int collectFullNumber(vector<vector<char>>& myArray, vector<vector<bool>>& checkedArray, int row, int found) {
+    string myNum;
+    // get leftest
+    bool lefting = true;
+    while (lefting) {
+        if (found == 0) {
+            lefting = false; 
+            break; 
+        }
+        if (isNum(myArray[row][found--])) { found --; }
+    }
+
+    bool righting = true;
+    while (righting) {
+        if (isNum(myArray[row][found])) {
+            myNum += myArray[row][found];
+            found ++;
+            checkedArray[row][found] = true;
+        }
+        else {
+            righting = false;
+        }
+    }
+    cout << "Number Found: " << myNum << endl;
+    return stoi(myNum);
+}
+
 
 int solve_elves() {
     // create array of characters from text
@@ -59,8 +87,16 @@ int solve_elves() {
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < length; y++) {
             char currentChar = myArray[y][x];
+            if (isNum(currentChar)) {
+                if (!checkedArray[y][x]) {
+                    int myNum = collectFullNumber(myArray, checkedArray, y, x);
+                    cout << "My number: " << myNum << endl;
+                }
+            }
         }
     }
+
+    return 0;
 }
 
 
