@@ -44,45 +44,14 @@ bool isNum(char input) {
 }
 
 bool isSymbol(char input) {
-    cout << "isSymbol called" << endl;
     return (!isNum(input) && (input != '.'));
 }
 
 int collectFullNumber(vector<vector<char>>& myArray, vector<vector<bool>>& checkedArray, unsigned int row, unsigned int found) {
-    cout << "Starting collectFullNumber()" << endl;
-    cout << "hehe xd: " << myArray[row][found] << endl;
-
-    /*
-    bool lefting = true;
-    while (lefting) {
-        if (found == 0) {
-            lefting = false; 
-            break; 
-        }
-        if (isNum(myArray[row][found - 1])) { found--; }
-        else { lefting = false; }
-    }
-    */
     while (found > 0 && isNum(myArray[row][found - 1])) {
         found--;
     }
 
-    cout << "hoho: " << myArray[row][found] << endl;
-    /*
-    bool righting = true;
-    string myNum = "";
-    while (righting) {
-        // TODO: Check out of bounds
-        myNum += myArray[row][found];
-        checkedArray[row][found] = true;
-        if (found ++ > myArray[0].size() - 1) {
-            righting = false;
-            break;
-        }
-        if (isNum(myArray[row][found++])) { found ++; }
-        else { righting = false; }
-    }
-    */
     string myNum = "";
     while (found < myArray[row].size() && isNum(myArray[row][found])) {
         myNum += myArray[row][found];
