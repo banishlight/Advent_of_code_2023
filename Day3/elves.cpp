@@ -8,7 +8,7 @@ using namespace std;
 void readFileIntoArray(vector<vector<char>>& myArray) {
     ifstream file("input.txt");
     if (!file.is_open()) {
-        // File is unable to open
+        cout << "File unable to open" << endl;
     }
 
     string line;
@@ -17,6 +17,7 @@ void readFileIntoArray(vector<vector<char>>& myArray) {
         myArray.push_back(charLine);
     }
     file.close();
+
 }
 
 void createBoolArray(vector<vector<bool>>& checkedArray,  vector<vector<char>>& myArray) {
@@ -29,6 +30,7 @@ void createBoolArray(vector<vector<bool>>& checkedArray,  vector<vector<char>>& 
 }
 
 bool isNum(char input) {
+    // cout << "isNum: " << input << endl;
     return (input == '0' ||
             input == '1' ||
             input == '2' ||
@@ -42,34 +44,56 @@ bool isNum(char input) {
 }
 
 bool isSymbol(char input) {
-    return (!isNum(input) && !(input == '.'));
+    cout << "isSymbol called" << endl;
+    return (!isNum(input) && (input != '.'));
 }
 
-int collectFullNumber(vector<vector<char>>& myArray, vector<vector<bool>>& checkedArray, int row, int found) {
-    string myNum;
-    // get leftest
+int collectFullNumber(vector<vector<char>>& myArray, vector<vector<bool>>& checkedArray, unsigned int row, unsigned int found) {
+    cout << "Starting collectFullNumber()" << endl;
+    cout << "hehe xd: " << myArray[row][found] << endl;
+
+    /*
     bool lefting = true;
     while (lefting) {
         if (found == 0) {
             lefting = false; 
             break; 
         }
-        if (isNum(myArray[row][found--])) { found --; }
+        if (isNum(myArray[row][found - 1])) { found--; }
+        else { lefting = false; }
+    }
+    */
+    while (found > 0 && isNum(myArray[row][found - 1])) {
+        found--;
     }
 
+    cout << "hoho: " << myArray[row][found] << endl;
+    /*
     bool righting = true;
+    string myNum = "";
     while (righting) {
-        if (isNum(myArray[row][found])) {
-            myNum += myArray[row][found];
-            found ++;
-            checkedArray[row][found] = true;
-        }
-        else {
+        // TODO: Check out of bounds
+        myNum += myArray[row][found];
+        checkedArray[row][found] = true;
+        if (found ++ > myArray[0].size() - 1) {
             righting = false;
+            break;
         }
+        if (isNum(myArray[row][found++])) { found ++; }
+        else { righting = false; }
     }
+    */
+    string myNum = "";
+    while (found < myArray[row].size() && isNum(myArray[row][found])) {
+        myNum += myArray[row][found];
+        checkedArray[row][found] = true;
+        found++;
+    }
+    cout << "Row: " << row << endl;
+    cout << "Column: " << found << endl;
     cout << "Number Found: " << myNum << endl;
-    return stoi(myNum);
+    int myResult = stoi(myNum);
+    return myResult;
 }
 
 
@@ -84,18 +108,96 @@ int solve_elves() {
     int length = myArray.size();
     int width = myArray[0].size();
 
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < length; y++) {
+    int sum = 0;
+    cout << "Starting iterating" << endl;
+    for (int y = 0; y < length; y++) {
+         for (int x = 0; x < width; x++) {
             char currentChar = myArray[y][x];
-            if (isNum(currentChar)) {
-                if (!checkedArray[y][x]) {
-                    int myNum = collectFullNumber(myArray, checkedArray, y, x);
-                    cout << "My number: " << myNum << endl;
+            if (isSymbol(currentChar)) {
+                cout << "Symbol found" << endl;
+                // Check one character radius around symbol now
+                // 0, 0 is the symbol so skip
+                bool leftClear = false;
+                bool rightClear = false;
+                bool topClear = false;
+                bool botClear = false;
+                if (x != 0) {
+                    leftClear = true;
                 }
+                if (x < width - 1) {
+                    rightClear = true;
+                }
+                if (y != 0) {
+                    topClear = true;
+                }
+                if ( y < length - 1) {
+                    botClear = true;
+                }
+                // Check Left of symbol
+                if (leftClear) {
+                    if (isNum(myArray[y][x - 1]) && !checkedArray[y][x - 1]) {
+                        cout << "Collecting to the left" << endl;
+                        sum += collectFullNumber(myArray, checkedArray, y, x - 1);
+                    }
+                    // Check Top Left of symbol
+                    if (topClear) {
+                        if (isNum(myArray[y - 1][x - 1]) && !checkedArray[y - 1][x - 1]) {
+                            cout << "Collecting to the top left" << endl;
+                            sum += collectFullNumber(myArray, checkedArray, y - 1, x - 1);
+                        }
+                    }
+                    // Check Bot Left of symbol
+                    if (botClear) {
+                        if (isNum(myArray[y + 1][x - 1]) && !checkedArray[y + 1][x - 1]) {
+                            cout << "Collecting to the bottom left" << endl;
+                            sum += collectFullNumber(myArray, checkedArray, y + 1, x - 1);
+                        }
+                    }
+                }
+                
+                // Check Right of symbol
+                if (rightClear) {
+                    if (isNum(myArray[y][x + 1]) && !checkedArray[y][x + 1]) {
+                        cout << "Collecting to the right" << endl;
+                        sum += collectFullNumber(myArray, checkedArray, y, x + 1);
+                    }
+                    // Check Top Right of symbol
+                    if (topClear) {
+                        if (isNum(myArray[y - 1][x + 1]) && !checkedArray[y - 1][x + 1]) {
+                            cout << "Collecting to the top right" << endl;
+                            sum += collectFullNumber(myArray, checkedArray, y - 1, x + 1);
+                        }
+                    }
+                    // Check Bot Right of symbol
+                    if (botClear) {
+                        if (isNum(myArray[y + 1][x + 1]) && !checkedArray[y + 1][x + 1]) {
+                            cout << "Collecting to the bottom right" << endl;
+                            sum += collectFullNumber(myArray, checkedArray, y + 1, x + 1);
+                        }
+                    }
+                }
+                
+                // Check Top of symbol
+                if (topClear) {
+                    if (isNum(myArray[y - 1][x]) && !checkedArray[y - 1][x]) {
+                        cout << "Collecting to the top" << endl;
+                        sum += collectFullNumber(myArray, checkedArray, y - 1, x);
+                    }
+                }
+
+                // Check Bot of symbol
+                if (botClear) {
+                    if (isNum(myArray[y + 1][x]) && !checkedArray[y + 1][x]) {
+                        cout << "Collecting to the bottom" << endl;
+                        sum += collectFullNumber(myArray, checkedArray, y + 1, x);
+                    }
+                }
+
             }
+            cout << "Running total: " << sum << endl;
         }
     }
-
+    cout << "Here is the result: " << sum << endl;
     return 0;
 }
 
@@ -103,5 +205,5 @@ int solve_elves() {
 
 
 int main() {
-    // solve_elves();
+    solve_elves();
 }
