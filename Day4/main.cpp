@@ -17,11 +17,24 @@ int checkForWinners(vector<int> winners, vector<int> chosen) {
 }
 
 vector<int> readWinners() {
+    // iterate index to ':'
 
 }
 
 vector<int> readChosen() {
-
+    // iterate index over to '|' + 1
+    // loop collecting numbers:
+    // looping = true
+    // string myNum = ""
+        // if index == endofline:
+            // convert string to int and add to list
+            // break;
+        //if myChar == ' ':
+            // if sizeofstring > 0, convert to int and add to list
+            // myNum = ""
+        // else
+            // myNum += myChar
+        // index += 1
 }
 
 void solveDay4() {
